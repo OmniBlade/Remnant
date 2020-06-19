@@ -13,6 +13,7 @@ set(GAMEENGINE_SRC
     game/memory/alloc.cpp
     game/memory/newdel.cpp
     game/net/commbuff.cpp
+    game/net/listener.cpp
 )
 
 if(CMAKE_CONFIGURATION_TYPES)
