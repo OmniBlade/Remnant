@@ -14,6 +14,7 @@ set(GAMEENGINE_SRC
     game/memory/newdel.cpp
     game/net/commbuff.cpp
     game/net/listener.cpp
+    game/net/reliable.cpp
 )
 
 if(CMAKE_CONFIGURATION_TYPES)
