@@ -14,6 +14,7 @@
  */
 #include "setuphooks.h"
 #include "alloc.h"
+#include "cmdline.h"
 #include "hooker.h"
 #include <malloc.h>
 #include <stdarg.h>
@@ -42,7 +43,8 @@ void Setup_Hooks()
     Hook_Function(0x005098B0, &Free);
     Hook_Function(0x005098E0, &Resize_Alloc);
 
-    
+    // Hook command line parsing to allow modifying globals from command line.
+    Hook_Function(0x0047CE94, &Parse_Command_Line);
 #endif
 }
 

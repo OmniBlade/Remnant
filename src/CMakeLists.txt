@@ -1,6 +1,7 @@
 set(GAMEENGINE_INCLUDES
     game
     game/common
+    game/engine
     game/memory
     game/net
 )
@@ -10,6 +11,7 @@ set(HOOKER_SRC hooker/dllmain.cpp hooker/hooker.cpp hooker/setupglobals.cpp hook
 set(GAMEENGINE_SRC
     game/common/bitarray.cpp
     game/common/vector.cpp
+    game/engine/cmdline.cpp
     game/memory/alloc.cpp
     game/memory/newdel.cpp
     game/net/commbuff.cpp
