@@ -43,6 +43,7 @@ private:
 
 class ListenerClass
 {
+    friend void Setup_Hooks();
 public:
     ListenerClass();
     ListenerClass(ProtocolClass *protocol);

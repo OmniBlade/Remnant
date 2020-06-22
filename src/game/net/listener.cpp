@@ -43,6 +43,7 @@ ListenerProtocolClass::~ListenerProtocolClass()
 void ListenerProtocolClass::Connection_Requested()
 {
     // TODO This is called on FD_ACCEPT events, I believe it should also signal ReliableCommClass to accept the connection.
+    captainslog_debug("ListenerProtocolClass::Connection_Requested was called but did nothing.");
     ++ConnectionRequests;
 }
 
@@ -171,9 +172,12 @@ int ListenerClass::Open_Socket(unsigned short port)
     addr.sin_addr.s_addr = htonl(0);
 
     if (bind(Socket, (sockaddr *)&addr, sizeof(addr)) == SOCKET_ERROR) {
+        captainslog_debug("Failed to bind listener socket.");
         Close_Socket();
         return 0;
     }
+
+    captainslog_debug("Listening on port %hu.", port);
 
     return 1;
 }
@@ -203,7 +207,7 @@ long __stdcall ListenerClass::Window_Proc(HWND hwnd, unsigned umsg, unsigned wpa
             return 0;
         case SSWM_LISTENER_MSG:
             captainslog_info("Listener accepted a connection.");
-            if ((lparam >> 16) == 0) {
+            if (WSAGETSELECTERROR(lparam) == 0) {
                 thisptr->Protocol->Connection_Requested();
             }
 

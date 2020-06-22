@@ -16,6 +16,7 @@
 #include "alloc.h"
 #include "cmdline.h"
 #include "hooker.h"
+#include "listener.h"
 #include <malloc.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -26,7 +27,10 @@ void Setup_Hooks()
 #ifdef __WATCOMC__
     // Disable the DirectDraw based terrain caching system.
     //Make_Global<BOOL>(0x0060BA6C) = false; // IconCacheAllowed
-
+    // Patch out the check for another sole window.
+    unsigned in = 0x004C0641;
+    unsigned char cmd = 0xEB;
+    WriteProcessMemory(GetCurrentProcess(), (LPVOID)in, &cmd, 1, nullptr);
     //replaces watcom's exception handler with ours
     //Hook_Function(0x005DF696, Watcom_Exception_Handler);
 
@@ -45,6 +49,11 @@ void Setup_Hooks()
 
     // Hook command line parsing to allow modifying globals from command line.
     Hook_Function(0x0047CE94, &Parse_Command_Line);
+
+    
+    Hook_Function(0x004F28BC, *ListenerProtocolClass::Connection_Requested);
+    Hook_Function(0x0050244B, *ListenerClass::Open_Socket);
+    Hook_Function(0x00502537, &ListenerClass::Window_Proc);
 #endif
 }
 

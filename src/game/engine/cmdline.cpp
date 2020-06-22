@@ -15,7 +15,11 @@
  */
 #include "cmdline.h"
 #include "hooker.h"
+#include <captainslog.h>
 #include <string.h>
+#include <direct.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 class SpecialClass
 {
@@ -36,6 +40,12 @@ int Obfuscate(const char *string)
     return func(string);
 }
 
+int Read_Game_Options(const char *string)
+{
+    DEFINE_CALL(func, 0x0047DAD8, int, const char *);
+    return func(string);
+}
+
 extern int &Scenario;
 extern char &ScenPlayer;
 extern char &ScenDir;
@@ -46,10 +56,12 @@ extern BOOL &Debug_Unshroud;
 extern int &WChatMode;
 extern BOOL &Debug_Quiet;
 extern char &GameToPlay;
+extern char &MenuSelection;
 extern BOOL &OfflineMode;
 
 #define FROMINSTALL 0xD95C68A2
 #define GAME_SERVER 2
+#define GAME_CLIENT 3
 
 BOOL Parse_Command_Line(int argc, char **argv)
 {
@@ -78,6 +90,116 @@ BOOL Parse_Command_Line(int argc, char **argv)
             GameToPlay = GAME_SERVER;
             OfflineMode = false;
             Debug_Map = true;
+            const char *logfile = nullptr;
+#if LOGGING_LEVEL != LOGLEVEL_NONE
+            char dirbuf[PATH_MAX];
+            char curbuf[PATH_MAX];
+            char prevbuf[PATH_MAX];
+
+#ifdef PLATFORM_WINDOWS
+            char *tmp = getenv("USERPROFILE");
+
+            if (tmp != NULL) {
+                strcpy(dirbuf, tmp);
+                strcat(dirbuf, "\\Documents\\Remnant");
+                mkdir(dirbuf);
+                strcat(dirbuf, "\\");
+            } else {
+                GetModuleFileNameA(0, dirbuf, sizeof(dirbuf));
+
+                // Get the path to the executable minus the actual filename.
+                for (char *i = &dirbuf[strlen(dirbuf)]; i >= dirbuf && (*i != '\\' || *i != '/'); --i) {
+                    *i = '\0';
+                }
+            }
+#else
+            char *homedir = getenv("HOME");
+            if (homedir != nullptr) {
+                strcpy(dirbuf, homedir);
+            }
+
+            if (homedir == nullptr) {
+                homedir = getpwuid(getuid())->pw_dir;
+                if (homedir != nullptr) {
+                    strcpy(dirbuf, homedir);
+                }
+            }
+
+            if (homedir != nullptr) {
+                strcat(dirbuf, "/.config/Remnant");
+            }
+#endif
+            const char *prefix = "";
+            strcpy(prevbuf, dirbuf);
+            strcat(prevbuf, prefix);
+            strcat(prevbuf, "SoleServerDebugLogPrev.txt");
+            strcpy(curbuf, dirbuf);
+            strcat(curbuf, prefix);
+            strcat(curbuf, "SoleServerDebugLogFile.txt");
+            remove(prevbuf);
+            rename(curbuf, prevbuf);
+            logfile = curbuf;
+#endif
+            captainslog_init(LOGLEVEL_DEBUG, logfile, true, false, false);
+            captainslog_ignoreasserts(false);
+            captainslog_allowpopups(true);
+
+        } else if (strcasecmp(arg, "-CLIENT") == 0) {
+            Read_Game_Options("CLIENT.INI");
+            MenuSelection = 1;
+            const char *logfile = nullptr;
+#if LOGGING_LEVEL != LOGLEVEL_NONE
+            char dirbuf[PATH_MAX];
+            char curbuf[PATH_MAX];
+            char prevbuf[PATH_MAX];
+
+#ifdef PLATFORM_WINDOWS
+            char *tmp = getenv("USERPROFILE");
+
+            if (tmp != NULL) {
+                strcpy(dirbuf, tmp);
+                strcat(dirbuf, "\\Documents\\Remnant");
+                mkdir(dirbuf);
+                strcat(dirbuf, "\\");
+            } else {
+                GetModuleFileNameA(0, dirbuf, sizeof(dirbuf));
+
+                // Get the path to the executable minus the actual filename.
+                for (char *i = &dirbuf[strlen(dirbuf)]; i >= dirbuf && (*i != '\\' || *i != '/'); --i) {
+                    *i = '\0';
+                }
+            }
+#else
+            char *homedir = getenv("HOME");
+            if (homedir != nullptr) {
+                strcpy(dirbuf, homedir);
+            }
+
+            if (homedir == nullptr) {
+                homedir = getpwuid(getuid())->pw_dir;
+                if (homedir != nullptr) {
+                    strcpy(dirbuf, homedir);
+                }
+            }
+
+            if (homedir != nullptr) {
+                strcat(dirbuf, "/.config/Remnant");
+            }
+#endif
+            const char *prefix = "";
+            strcpy(prevbuf, dirbuf);
+            strcat(prevbuf, prefix);
+            strcat(prevbuf, "SoleClientDebugLogPrev.txt");
+            strcpy(curbuf, dirbuf);
+            strcat(curbuf, prefix);
+            strcat(curbuf, "SoleClientDebugLogFile.txt");
+            remove(prevbuf);
+            rename(curbuf, prevbuf);
+            logfile = curbuf;
+#endif
+            captainslog_init(LOGLEVEL_DEBUG, logfile, true, false, false);
+            captainslog_ignoreasserts(false);
+            captainslog_allowpopups(true);
         }
     }
 

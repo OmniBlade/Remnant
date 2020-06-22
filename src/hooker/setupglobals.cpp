@@ -20,6 +20,7 @@ int &Scenario = Make_Global<int>(0x005729F0);
 char &ScenPlayer = Make_Global<char>(0x005729F4);
 char &ScenDir = Make_Global<char>(0x005729F5);
 char &Whom = Make_Global<char>(0x005729EC);
+char &MenuSelection = Make_Global<char>(0x00536F64);
 SpecialClass &Special = Make_Global<SpecialClass>(0x005729E8);
 BOOL &Debug_Map = Make_Global<BOOL>(0x0057105C);
 BOOL &Debug_Unshroud = Make_Global<BOOL>(0x00571064);
