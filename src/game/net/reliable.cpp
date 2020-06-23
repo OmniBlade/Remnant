@@ -374,7 +374,7 @@ long __stdcall ReliableCommClass::Window_Proc(HWND hwnd, unsigned int message, u
                 thisptr->Host.Name[0] = '\0';
             } else {
                 strcpy(thisptr->Host.Name, thisptr->Hbuf);
-
+                captainslog_info("  Host is called '%s'.", thisptr->Host.Name);
                 if (thisptr->Protocol != nullptr) {
                     thisptr->Protocol->Name_Resolved();
                 }
@@ -427,6 +427,7 @@ long __stdcall ReliableCommClass::Window_Proc(HWND hwnd, unsigned int message, u
                         return 0;
                     }
 
+                    captainslog_debug("Receiving a data packet.");
                     while (true) {
                         bool get_request = false;
                         int received = 0;
@@ -480,6 +481,7 @@ long __stdcall ReliableCommClass::Window_Proc(HWND hwnd, unsigned int message, u
                             if (packet_size > thisptr->ReceiveLen) {
                                 // If its a get request, make a response. Otherwise handle as game packet.
                                 if (get_request) {
+                                    captainslog_debug(" Got GET packet, providing http response.");
                                     // Discard the rest of the packet.
                                     while (recv(thisptr->Socket, thisptr->ReceiveBuf, 10, 0) > 0) {
                                     }
@@ -488,6 +490,7 @@ long __stdcall ReliableCommClass::Window_Proc(HWND hwnd, unsigned int message, u
                                     thisptr->Disconnect();
                                     break;
                                 } else {
+                                    captainslog_debug(" Recieving data to ReceiveBuff.");
                                     received = recv(thisptr->Socket,
                                     &thisptr->ReceiveBuf[thisptr->ReceiveLen],
                                     packet_size - thisptr->ReceiveLen,
@@ -553,6 +556,7 @@ long __stdcall ReliableCommClass::Window_Proc(HWND hwnd, unsigned int message, u
                         return 0;
                     }
 
+                    captainslog_debug("Sending a data packet.");
                     unsigned short packet_size = ntohs(*((unsigned short *)thisptr->SendEntry->m_Buffer));
 
                     while (thisptr->SendLen > 0) {

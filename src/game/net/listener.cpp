@@ -14,6 +14,7 @@
  */
 #include "listener.h"
 #include "commbuff.h"
+#include "connectclient.h"
 #include "protocol.h"
 #include <captainslog.h>
 
@@ -44,6 +45,7 @@ void ListenerProtocolClass::Connection_Requested()
 {
     // TODO This is called on FD_ACCEPT events, I believe it should also signal ReliableCommClass to accept the connection.
     captainslog_debug("ListenerProtocolClass::Connection_Requested was called but did nothing.");
+    Connect_To_Client(Listener);
     ++ConnectionRequests;
 }
 

@@ -27,3 +27,9 @@ BOOL &Debug_Unshroud = Make_Global<BOOL>(0x00571064);
 BOOL &Debug_Quiet = Make_Global<BOOL>(0x00571040);
 BOOL &OfflineMode = Make_Global<BOOL>(0x00591BD0);
 int &WChatMode = Make_Global<int>(0x00591884);
+
+// connectclient.cpp
+#include "vector.h"
+class ReliableCommClass;
+DynamicVectorClass<ProtocolClass *> &ProtocolsVector = Make_Global<DynamicVectorClass<ProtocolClass *> >(0x00577B4C);
+DynamicVectorClass<ReliableCommClass *> &CommsVector = Make_Global<DynamicVectorClass<ReliableCommClass *> >(0x00577B34);
